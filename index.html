@@ -14,23 +14,38 @@
             scroll-behavior: smooth;
         }
         .page-transition {
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transition: all 0.4s ease-out;
         }
         .hidden {
             display: none;
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(20px);
         }
         .active {
-            display: block;
+            display: block !important;
             opacity: 1;
             transform: translateY(0);
         }
         /* 玻璃擬態效果 */
         .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        /* 分頁按鈕啟用樣式 */
+        .nav-link.active-tab {
+            color: #2563eb;
+            position: relative;
+        }
+        .nav-link.active-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2563eb;
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -39,21 +54,34 @@
     <!-- 導覽列 -->
     <nav class="fixed top-0 w-full z-50 glass shadow-sm">
         <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
+            <div class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent cursor-pointer" onclick="showPage('home')">
                 MyBrand.
             </div>
+            
+            <!-- 電腦版選單 -->
             <div class="hidden md:flex space-x-8">
-                <button onclick="showPage('home')" class="nav-link font-medium hover:text-blue-600 transition">首頁</button>
-                <button onclick="showPage('about')" class="nav-link font-medium hover:text-blue-600 transition">關於我</button>
-                <button onclick="showPage('portfolio')" class="nav-link font-medium hover:text-blue-600 transition">作品集</button>
-                <button onclick="showPage('contact')" class="nav-link font-medium hover:text-blue-600 transition">聯絡我</button>
+                <button onclick="showPage('home')" id="nav-home" class="nav-link font-medium hover:text-blue-600 transition active-tab">首頁</button>
+                <button onclick="showPage('about')" id="nav-about" class="nav-link font-medium hover:text-blue-600 transition">關於我</button>
+                <button onclick="showPage('portfolio')" id="nav-portfolio" class="nav-link font-medium hover:text-blue-600 transition">作品集</button>
+                <button onclick="showPage('contact')" id="nav-contact" class="nav-link font-medium hover:text-blue-600 transition">聯絡我</button>
             </div>
-            <!-- 行動裝置選單按鈕 (簡化版) -->
+
+            <!-- 行動裝置選單按鈕 -->
             <div class="md:hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
+                <button onclick="toggleMobileMenu()" class="p-2 text-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
             </div>
+        </div>
+
+        <!-- 行動裝置下拉選單 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 p-4 space-y-4 shadow-xl">
+            <button onclick="showPage('home')" class="block w-full text-left px-4 py-2 font-medium">首頁</button>
+            <button onclick="showPage('about')" class="block w-full text-left px-4 py-2 font-medium">關於我</button>
+            <button onclick="showPage('portfolio')" class="block w-full text-left px-4 py-2 font-medium">作品集</button>
+            <button onclick="showPage('contact')" class="block w-full text-left px-4 py-2 font-medium">聯絡我</button>
         </div>
     </nav>
 
@@ -61,72 +89,51 @@
     <main class="pt-24 pb-12 max-w-6xl mx-auto px-6">
         
         <!-- 首頁分頁 -->
-        <section id="home" class="page-transition active py-20 text-center md:text-left flex flex-col md:flex-row items-center justify-between">
-            <div class="md:w-1/2">
-                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                    你好，我是 <span class="text-blue-600">小明</span><br>
-                    一位熱愛設計的開發者
-                </h1>
-                <p class="text-xl text-slate-600 mb-8 leading-relaxed">
-                    我專注於創造美觀且實用的網頁體驗。在這裡，你可以了解我的故事，並查看我最近的創作。
-                </p>
-                <div class="flex space-x-4 justify-center md:justify-start">
-                    <button onclick="showPage('portfolio')" class="bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
-                        查看作品
-                    </button>
-                    <button onclick="showPage('contact')" class="border border-slate-300 px-8 py-3 rounded-full font-bold hover:bg-slate-100 transition">
-                        與我聯絡
-                    </button>
+        <section id="home" class="page-transition active py-20">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="md:w-1/2 text-center md:text-left">
+                    <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                        你好，我是 <span class="text-blue-600">小明</span><br>
+                        一位熱愛設計的開發者
+                    </h1>
+                    <p class="text-xl text-slate-600 mb-8 leading-relaxed">
+                        這是一個「多分頁」設計。雖然所有內容都在一個 HTML 檔案內，但我們透過程式讓它點起來像不同的頁面。
+                    </p>
+                    <div class="flex space-x-4 justify-center md:justify-start">
+                        <button onclick="showPage('portfolio')" class="bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
+                            查看作品集
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="md:w-1/2 mt-12 md:mt-0 flex justify-center">
-                <div class="relative">
-                    <div class="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-teal-400 rounded-full blur opacity-30 animate-pulse"></div>
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" alt="個人照" class="relative rounded-full w-64 h-64 md:w-80 md:h-80 object-cover border-4 border-white shadow-xl">
+                <div class="md:w-1/2 mt-12 md:mt-0 flex justify-center">
+                    <div class="relative">
+                        <div class="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-teal-400 rounded-full blur opacity-30 animate-pulse"></div>
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" alt="個人照" class="relative rounded-full w-64 h-64 md:w-80 md:h-80 object-cover border-4 border-white shadow-xl">
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- 關於我分頁 -->
         <section id="about" class="page-transition hidden py-12">
-            <h2 class="text-3xl font-bold mb-10 text-center">關於我</h2>
+            <h2 class="text-4xl font-bold mb-10 text-center">關於我</h2>
             <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div>
-                    <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&h=400&fit=crop" alt="關於我圖片" class="rounded-2xl shadow-lg">
+                <div class="bg-white p-2 rounded-3xl shadow-sm border border-slate-100">
+                    <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&h=400&fit=crop" alt="關於我圖片" class="rounded-2xl w-full">
                 </div>
                 <div>
-                    <h3 class="text-2xl font-bold mb-4">我的背景</h3>
-                    <p class="text-slate-600 mb-6 leading-relaxed">
-                        我目前是一位自主學習者，致力於探索前端開發的奧秘。我深信好的設計不僅僅是漂亮，更應該能直覺地解決使用者的問題。
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600 underline decoration-blue-200 underline-offset-8">我的背景</h3>
+                    <p class="text-slate-600 mb-8 leading-relaxed text-lg">
+                        這是一個獨立的「關於我」分頁。點擊上方的導覽列可以切換到不同的功能區塊。這種設計方式（SPA）目前非常流行，因為切換速度快且流暢。
                     </p>
-                    <h3 class="text-xl font-bold mb-4">技能專長</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="font-medium">網頁設計 (UI/UX)</span>
-                                <span class="text-slate-400">90%</span>
-                            </div>
-                            <div class="w-full bg-slate-200 h-2 rounded-full">
-                                <div class="bg-blue-500 h-2 rounded-full" style="width: 90%"></div>
-                            </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 bg-white rounded-2xl shadow-sm border border-slate-50 text-center">
+                            <div class="text-3xl font-bold text-blue-600">3+</div>
+                            <div class="text-sm text-slate-500">專案經驗</div>
                         </div>
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="font-medium">HTML/CSS</span>
-                                <span class="text-slate-400">85%</span>
-                            </div>
-                            <div class="w-full bg-slate-200 h-2 rounded-full">
-                                <div class="bg-teal-500 h-2 rounded-full" style="width: 85%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="font-medium">JavaScript</span>
-                                <span class="text-slate-400">70%</span>
-                            </div>
-                            <div class="w-full bg-slate-200 h-2 rounded-full">
-                                <div class="bg-indigo-500 h-2 rounded-full" style="width: 70%"></div>
-                            </div>
+                        <div class="p-4 bg-white rounded-2xl shadow-sm border border-slate-50 text-center">
+                            <div class="text-3xl font-bold text-teal-500">100%</div>
+                            <div class="text-sm text-slate-500">學習熱忱</div>
                         </div>
                     </div>
                 </div>
@@ -135,42 +142,31 @@
 
         <!-- 作品集分頁 -->
         <section id="portfolio" class="page-transition hidden py-12">
-            <h2 class="text-3xl font-bold mb-10 text-center">精選作品</h2>
+            <h2 class="text-4xl font-bold mb-4 text-center">作品集</h2>
+            <p class="text-center text-slate-500 mb-12 italic">這是我的創作展示分頁</p>
             <div class="grid md:grid-cols-3 gap-8">
-                <!-- 作品卡片 1 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group">
-                    <div class="relative overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=350&fit=crop" alt="專案一" class="w-full transition duration-500 group-hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <span class="text-blue-600 text-sm font-bold uppercase tracking-wider">Web Design</span>
-                        <h3 class="text-xl font-bold mt-2 mb-3">企業品牌官網</h3>
-                        <p class="text-slate-500 text-sm mb-4">使用現代化框架打造的響應式企業網站，提升品牌形象。</p>
-                        <a href="#" class="text-blue-600 font-bold hover:underline">查看更多 →</a>
+                <!-- 作品 1 -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 group">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=350&fit=crop" class="w-full">
+                    <div class="p-6 text-center">
+                        <h3 class="font-bold text-lg">專案 A</h3>
+                        <p class="text-slate-500 text-sm">網頁開發</p>
                     </div>
                 </div>
-                <!-- 作品卡片 2 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group">
-                    <div class="relative overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500&h=350&fit=crop" alt="專案二" class="w-full transition duration-500 group-hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <span class="text-teal-600 text-sm font-bold uppercase tracking-wider">App Concept</span>
-                        <h3 class="text-xl font-bold mt-2 mb-3">健康管理 App</h3>
-                        <p class="text-slate-500 text-sm mb-4">一個旨在簡化生活、追蹤日常水分攝取的 App 概念設計。</p>
-                        <a href="#" class="text-blue-600 font-bold hover:underline">查看更多 →</a>
+                <!-- 作品 2 -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 group">
+                    <img src="https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?w=500&h=350&fit=crop" class="w-full">
+                    <div class="p-6 text-center">
+                        <h3 class="font-bold text-lg">專案 B</h3>
+                        <p class="text-slate-500 text-sm">視覺設計</p>
                     </div>
                 </div>
-                <!-- 作品卡片 3 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group">
-                    <div class="relative overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&h=350&fit=crop" alt="專案三" class="w-full transition duration-500 group-hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <span class="text-purple-600 text-sm font-bold uppercase tracking-wider">E-Commerce</span>
-                        <h3 class="text-xl font-bold mt-2 mb-3">極簡購物商場</h3>
-                        <p class="text-slate-500 text-sm mb-4">專注於產品視覺的購物平台，提供最純粹的購買體驗。</p>
-                        <a href="#" class="text-blue-600 font-bold hover:underline">查看更多 →</a>
+                <!-- 作品 3 -->
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 group">
+                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&h=350&fit=crop" class="w-full">
+                    <div class="p-6 text-center">
+                        <h3 class="font-bold text-lg">專案 C</h3>
+                        <p class="text-slate-500 text-sm">前端工程</p>
                     </div>
                 </div>
             </div>
@@ -178,35 +174,18 @@
 
         <!-- 聯絡我分頁 -->
         <section id="contact" class="page-transition hidden py-12">
-            <h2 class="text-3xl font-bold mb-10 text-center">與我聯絡</h2>
-            <div class="max-w-2xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-lg">
-                <p class="text-center text-slate-600 mb-8">
-                    有任何合作機會或問題嗎？歡迎填寫下方表單，我會盡快回覆您！
-                </p>
-                <form class="space-y-6" onsubmit="event.preventDefault(); alert('感謝您的訊息！這只是一個範例表單。');">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">您的姓名</label>
-                        <input type="text" placeholder="輸入姓名" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+            <h2 class="text-4xl font-bold mb-10 text-center">聯絡我</h2>
+            <div class="max-w-xl mx-auto bg-white p-8 rounded-[2rem] shadow-xl">
+                <div class="space-y-6">
+                    <div class="text-center">
+                        <p class="text-slate-500">有任何問題嗎？這裡是最後一個分頁。</p>
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">電子郵件</label>
-                        <input type="email" placeholder="example@email.com" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">訊息內容</label>
-                        <textarea rows="4" placeholder="在這裡輸入您的訊息..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition">
-                        發送訊息
+                    <input type="text" placeholder="您的姓名" class="w-full p-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-400 transition">
+                    <input type="email" placeholder="電子郵件" class="w-full p-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-400 transition">
+                    <textarea placeholder="您的訊息" rows="4" class="w-full p-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-400 transition"></textarea>
+                    <button class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition duration-300">
+                        送出訊息
                     </button>
-                </form>
-                
-                <div class="mt-12 pt-8 border-t border-slate-100 flex justify-center space-x-6">
-                    <!-- 社群圖示 (示意) -->
-                    <a href="#" class="text-slate-400 hover:text-blue-600 transition">Facebook</a>
-                    <a href="#" class="text-slate-400 hover:text-blue-400 transition">Twitter</a>
-                    <a href="#" class="text-slate-400 hover:text-pink-600 transition">Instagram</a>
-                    <a href="#" class="text-slate-400 hover:text-slate-900 transition">GitHub</a>
                 </div>
             </div>
         </section>
@@ -214,39 +193,51 @@
     </main>
 
     <!-- 頁尾 -->
-    <footer class="py-8 text-center text-slate-400 text-sm">
-        <p>&copy; 2024 小明的個人主頁. 使用 Tailwind CSS 打造.</p>
+    <footer class="py-12 border-t border-slate-100 text-center text-slate-400 text-sm">
+        <p>&copy; 2024 小明的現代個人網頁. 全站流暢切換.</p>
     </footer>
 
     <!-- 分頁切換 JavaScript -->
     <script>
         function showPage(pageId) {
-            // 獲取所有分頁
+            // 1. 隱藏所有分頁內容
             const pages = document.querySelectorAll('.page-transition');
-            
-            // 隱藏所有分頁
             pages.forEach(page => {
-                page.classList.remove('active');
                 page.classList.add('hidden');
+                page.classList.remove('active');
             });
 
-            // 顯示目標分頁
+            // 2. 顯示目標分頁內容
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
                 targetPage.classList.remove('hidden');
-                // 使用延遲確保 transition 動畫生效
+                // 延遲一點點讓動畫執行
                 setTimeout(() => {
                     targetPage.classList.add('active');
                 }, 10);
             }
 
-            // 更新導覽列樣式 (可視化當前頁面)
+            // 3. 更新導覽列按鈕的「啟用中」視覺狀態
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
-                link.classList.remove('text-blue-600');
+                link.classList.remove('active-tab');
             });
-            // 簡單處理：根據按鈕文字判斷（正式環境建議用 ID）
-            window.scrollTo(0, 0);
+            
+            const activeNav = document.getElementById('nav-' + pageId);
+            if (activeNav) {
+                activeNav.classList.add('active-tab');
+            }
+
+            // 4. 自動收起手機版選單
+            document.getElementById('mobile-menu').classList.add('hidden');
+
+            // 5. 滾動回頂部
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
         }
     </script>
 </body>
